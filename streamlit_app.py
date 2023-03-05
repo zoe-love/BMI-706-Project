@@ -44,16 +44,7 @@ subset = pd.concat([country_info, measure_info.reindex(country_info.index)], axi
 # Country selection
 countries = st.multiselect(label = 'Country Select', 
     options = subset['name'].unique().tolist(), 
-    default = [
-        "Austria",
-        "Germany",
-        "Iceland",
-        "Spain",
-        "Sweden",
-        "Thailand",
-        "Turkey",
-]
-)
+    default = subset['name'].unique().tolist())
 subset = subset[subset["name"].isin(countries)]
 
 
