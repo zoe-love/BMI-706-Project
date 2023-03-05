@@ -1,6 +1,7 @@
 import altair as alt
 import pandas as pd
 import streamlit as st
+import vega_datasets
 from vega_datasets import data
 import country_converter as coco
 cc = coco.CountryConverter()
@@ -8,8 +9,14 @@ cc = coco.CountryConverter()
 
 @st.cache
 def load_data():
-    ## {{ CODE HERE }} ##
+
     df = pd.read_csv("https://github.com/zoe-love/BMI-706-Project/blob/main/wash_data_cleaned.csv.zip")
+    
+    # remove country without numeric code (Channel Islands)
+    df = df[df['iso3'] != 'CHI']
+
+    # add numeric country codes
+    df['country-code'] = coco.convert(names = df['iso3'], to='ISOnumeric')
 
     return df
 
