@@ -60,9 +60,9 @@ subset = subset[subset["name"].isin(countries)]
 chart = alt.Chart(alt.topo_feature(data.world_110m.url, 'countries')).mark_geoshape(
     stroke='#aaa', strokeWidth=0.25
 ).transform_lookup(
-    lookup='id', from_=alt.LookupData(data=df, key='country-code', fields=['coverage'])
+    lookup='id', from_=alt.LookupData(data=df, key='country-code', fields=['wat bas'])
 ).encode(
-    color = 'coverage:Q',
+    color = 'wat bas:Q',
     tooltip = alt.Tooltip('pop_n:Q')
 ).project(
     type='equirectangular'
