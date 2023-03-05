@@ -11,24 +11,6 @@ cc = coco.CountryConverter()
 def load_data():
 
     df = pd.read_csv("https://github.com/zoe-love/BMI-706-Project/blob/main/wash_data_cleaned.csv.zip?raw=true", compression = 'zip')
-    
-    # remove country without numeric code (Channel Islands)
-    df = df[df['iso3'] != 'CHI']
-
-    # add numeric country codes
-    df['country-code'] = coco.convert(names = df['iso3'], to='ISOnumeric')
-
-    # filter to only national residence type
-    df = df[df['res_type'] == 'n']
-
-    # filter out any 'arc' variables
-    df = df[(df['level_1'] == 'arc_bas') | (df['level_1'] == 'arc_sm')]
-
-    # pivot table to have column for each unique measure and level_1 coverage amount
-    df = pd.pivot_table(df, values = 'coverage', index = ['name', 'year', 'pop_n', "iso3", "country-code"], columns = ['measure', 'level_1']).reset_index()
-    df.columns = [' '.join(col).strip() for col in df.columns.values]
-
-    
 
     return df
 
