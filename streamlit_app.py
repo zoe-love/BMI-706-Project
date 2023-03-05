@@ -10,7 +10,7 @@ cc = coco.CountryConverter()
 @st.cache
 def load_data():
 
-    df = pd.read_csv("https://github.com/zoe-love/BMI-706-Project/blob/main/wash_data_cleaned.csv.zip?raw=true", compression = 'zip')
+    df = pd.read_csv("https://raw.githubusercontent.com/zoe-love/BMI-706-Project/main/wash_data_cleaned.csv")
 
     return df
 
