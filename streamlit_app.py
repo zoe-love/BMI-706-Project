@@ -36,8 +36,8 @@ measure = st.radio(
     label = 'Measure Type',
     options = ['wat', 'hyg', 'san']
 )
-country_info = df[['name', 'year', 'pop_n', 'iso3', 'country-code']]
-measure_info = df.loc[:, df.columns.str.startswith(measure)]
+country_info = subset[['name', 'year', 'pop_n', 'iso3', 'country-code']]
+measure_info = subset.loc[:, subset.columns.str.startswith(measure)]
 subset = pd.concat([country_info, measure_info.reindex(country_info.index)], axis=1)
 
 
@@ -57,13 +57,46 @@ countries = st.multiselect(label = 'Country Select',
 subset = subset[subset["name"].isin(countries)]
 
 
-chart = alt.Chart(alt.topo_feature(data.world_110m.url, 'countries')).mark_geoshape(
+if measure == 'wat':
+  chart = alt.Chart(alt.topo_feature(data.world_110m.url, 'countries')).mark_geoshape(
     stroke='#aaa', strokeWidth=0.25
 ).transform_lookup(
-    lookup='id', from_=alt.LookupData(data=df, key='country-code', fields=['wat bas'])
+    lookup='id', from_=alt.LookupData(data=subset, key='country-code', fields=['wat bas'])
 ).encode(
     color = 'wat bas:Q',
-    tooltip = alt.Tooltip('pop_n:Q')
+    tooltip = alt.Tooltip('wat bas:Q')
+).project(
+    type='equirectangular'
+).properties(
+    width=900,
+    height=500
+).configure_view(
+    stroke=None
+)
+elif measure == 'san':
+  chart = alt.Chart(alt.topo_feature(data.world_110m.url, 'countries')).mark_geoshape(
+    stroke='#aaa', strokeWidth=0.25
+).transform_lookup(
+    lookup='id', from_=alt.LookupData(data=subset, key='country-code', fields=['san bas'])
+).encode(
+    color = 'san bas:Q',
+    tooltip = ['san bas:Q', 'pop_n:Q']
+).project(
+    type='equirectangular'
+).properties(
+    width=900,
+    height=500
+).configure_view(
+    stroke=None
+)
+else:
+  chart = alt.Chart(alt.topo_feature(data.world_110m.url, 'countries')).mark_geoshape(
+    stroke='#aaa', strokeWidth=0.25
+).transform_lookup(
+    lookup='id', from_=alt.LookupData(data=subset, key='country-code', fields=['hyg bas'])
+).encode(
+    color = 'hyg bas:Q',
+    tooltip = alt.Tooltip('hyg bas:Q')
 ).project(
     type='equirectangular'
 ).properties(
