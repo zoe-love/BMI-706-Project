@@ -30,20 +30,19 @@ st.write("## Global Water, Hygeine, and Sanitation Data")
 
 # Year selection Slider
 
-year = st.slider(label = "Year Select", min_value = 2000, max_value = 2020, value = 2012)
+year = st.slider(label = "Year Select", min_value = df['year'].min(), max_value = df['year'].max(), value = 2012)
 subset = df[df["year"] == year]
 
-### P2.3 ###
-# replace with st.multiselect
-# (hint: can use current hard-coded values below as as `default` for selector)
+# Type of covereage selection 
+measure = st.radio(
+    label = 'Measure Type',
+    options = subset['measure'].unique().tolist()
+)
+subset = subset[subset["measure"] == measure]
+
+# Country selection
 countries = st.multiselect(label = 'Country Select', 
-    options = ["Austria",
-        "Germany",
-        "Iceland",
-        "Spain",
-        "Sweden",
-        "Thailand",
-        "Turkey"], 
+    options = subset['name'].unique().tolist(), 
     default = [
         "Austria",
         "Germany",
@@ -57,19 +56,20 @@ countries = st.multiselect(label = 'Country Select',
 subset = subset[subset["name"].isin(countries)]
 
 
-# Modify coverage type
-coverage_type = st.selectbox(label ="Converage Type", 
-        options = ['wat', 'hyg', 'san'], index = 0)
-subset = subset[subset["measure"] == coverage_type]
-
-
-chart = alt.Chart(subset).mark_rect().encode(
-    x=alt.X("Age", sort=ages),
-    y=alt.Y("Country:N"),
-    color=alt.Color("Rate", scale = alt.Scale(clamp=True, domain=[0.01, 1000], type="log")),
-    tooltip=["Rate:Q"],
+chart = alt.Chart(alt.topo_feature(data.world_110m.url, 'countries')).mark_geoshape(
+    stroke='#aaa', strokeWidth=0.25
+).transform_lookup(
+    lookup='id', from_=alt.LookupData(data=df, key='country-code', fields=['coverage'])
+).encode(
+    color = 'coverage:Q',
+    tooltip = alt.Tooltip('pop_n:Q')
+).project(
+    type='equirectangular'
 ).properties(
-    title=f"{cancer} mortality rates for {'males' if sex == 'M' else 'females'} in {year}",
+    width=900,
+    height=500
+).configure_view(
+    stroke=None
 )
 ### P2.5 ###
 
