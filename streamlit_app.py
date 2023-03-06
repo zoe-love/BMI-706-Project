@@ -31,11 +31,11 @@ subset = df[df["year"] == year]
 
 # Type of covereage selection 
 
-measure = st.radio(
+type = st.radio(
     label = 'Measure Type',
     options = ['wat', 'hyg', 'san']
 )
-subset = subset[subset['measure'] == measure]
+subset = subset[subset['measure'] == type]
 
 # Country selection
 
@@ -48,9 +48,9 @@ wat_levels = ['bas', 'lim', 'unimp', 'sur']
 hyg_levels = ['bas', 'lim', 'nfac']
 san_levels = ['bas', 'lim', 'sew_c', 'sep', 'lat', 'unimp', 'od']
 
-if measure == 'wat':
+if type == 'wat':
   levels = wat_levels
-elif measure == 'hyg':
+elif type == 'hyg':
   levels = hyg_levels
 else:
   levels = san_levels
@@ -60,7 +60,7 @@ subset_wide = pd.pivot_table(subset, values = 'coverage', index = ['name', 'year
 subset_wide.columns = [' '.join(col).strip() for col in subset_wide.columns.values]
 
 # set wide levels
-levels_wide = [(measure + " ") + i for i in levels]
+levels_wide = [(type + " ") + i for i in levels]
 
 
 ### Chart 1 ###
