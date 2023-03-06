@@ -42,8 +42,7 @@ subset = pd.concat([country_info, measure_info.reindex(country_info.index)], axi
 # Country selection
 
 countries = st.selectbox(label = 'Country Select', 
-    options = subset['name'].unique().tolist(), 
-    default = subset['name'].unique().tolist())
+    options = subset['name'].unique().tolist())
 subset = subset[subset["name"].isin(countries)]
 
 # create line chart dataframe based on measure
