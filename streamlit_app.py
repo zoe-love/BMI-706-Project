@@ -35,9 +35,7 @@ measure = st.radio(
     label = 'Measure Type',
     options = ['wat', 'hyg', 'san']
 )
-country_info = subset[['name', 'year', 'pop_n', 'iso3', 'country-code']]
-measure_info = subset.loc[:, subset.columns.str.startswith(measure)]
-subset = pd.concat([country_info, measure_info.reindex(country_info.index)], axis=1)
+subset = subset[subset['measure'] == measure]
 
 # Country selection
 
