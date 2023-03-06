@@ -35,7 +35,7 @@ type = st.radio(
     label = 'Measure Type',
     options = ['wat', 'hyg', 'san']
 )
-subset = subset[subset['measure'] == type]
+subset = subset[subset["measure"] == type]
 
 # Country selection
 
