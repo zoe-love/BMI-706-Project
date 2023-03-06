@@ -16,9 +16,7 @@ def load_data():
 
 df = load_data()
 
-### P1.2 ###
-
-
+### TITLE ###
 st.write("## Global Water, Hygeine, and Sanitation Data")
 
 # Year selection Slider
@@ -32,6 +30,7 @@ year = st.slider(
 subset = df[df["year"] == year]
 
 # Type of covereage selection 
+
 measure = st.radio(
     label = 'Measure Type',
     options = ['wat', 'hyg', 'san']
@@ -40,65 +39,76 @@ country_info = subset[['name', 'year', 'pop_n', 'iso3', 'country-code']]
 measure_info = subset.loc[:, subset.columns.str.startswith(measure)]
 subset = pd.concat([country_info, measure_info.reindex(country_info.index)], axis=1)
 
-
 # Country selection
-countries = st.multiselect(label = 'Country Select', 
+
+countries = st.selectbox(label = 'Country Select', 
     options = subset['name'].unique().tolist(), 
     default = subset['name'].unique().tolist())
 subset = subset[subset["name"].isin(countries)]
 
+# create line chart dataframe based on measure
+if measure == 'wat':
+  line_df = df[(df['measure']== measure) & (df['name'] == countries)]
+elif measure == 'hyg':
+  line_df = df[(df['measure']== measure) & (df['name'] == countries)]
+else:
+  line_df = df[(df['measure']== measure) & (df['name'] == countries)]
+
+# set levels for bar chart based on measure
+wat_levels = ['bas', 'lim', 'unimp', 'sur']
+hyg_levels = ['bas', 'lim', 'nfac']
+san_levels = ['bas', 'lim', 'sew_c', 'sep', 'lat', 'unimp', 'od']
 
 if measure == 'wat':
-  chart = alt.Chart(alt.topo_feature(data.world_110m.url, 'countries')).mark_geoshape(
-    stroke='#aaa', strokeWidth=0.25
-).transform_lookup(
-    lookup='id', from_=alt.LookupData(data=subset, key='country-code', fields=['wat bas'])
-).encode(
-    color = 'wat bas:Q',
-    tooltip = alt.Tooltip('wat bas:Q')
-).project(
-    type='equirectangular'
-).properties(
-    width=900,
-    height=500
-).configure_view(
-    stroke=None
-)
-elif measure == 'san':
-  chart = alt.Chart(alt.topo_feature(data.world_110m.url, 'countries')).mark_geoshape(
-    stroke='#aaa', strokeWidth=0.25
-).transform_lookup(
-    lookup='id', from_=alt.LookupData(data=subset, key='country-code', fields=['san bas'])
-).encode(
-    color = 'san bas:Q',
-    tooltip = ['san bas:Q', 'pop_n:Q']
-).project(
-    type='equirectangular'
-).properties(
-    width=900,
-    height=500
-).configure_view(
-    stroke=None
-)
+  levels = wat_levels
+elif measure == 'hyg':
+  levels = hyg_levels
 else:
-  chart = alt.Chart(alt.topo_feature(data.world_110m.url, 'countries')).mark_geoshape(
-    stroke='#aaa', strokeWidth=0.25
-).transform_lookup(
-    lookup='id', from_=alt.LookupData(data=subset, key='country-code', fields=['hyg bas'])
-).encode(
-    color = 'hyg bas:Q',
-    tooltip = alt.Tooltip('hyg bas:Q')
-).project(
-    type='equirectangular'
-).properties(
-    width=900,
-    height=500
-).configure_view(
-    stroke=None
-)
-### P2.5 ###
+  levels = san_levels
 
-st.altair_chart(chart, use_container_width=True)
+# Global overview = subset_wide
+subset_wide = pd.pivot_table(subset, values = 'coverage', index = ['name', 'year', 'pop_n', "iso3", 'country-code'], columns = ['measure', 'level_1']).reset_index()
+subset_wide.columns = [' '.join(col).strip() for col in subset_wide.columns.values]
+
+# set wide levels
+levels_wide = [(measure + " ") + i for i in levels]
+
+
+### Chart 1 ###
+brush = alt.selection_interval( encodings=['x'])
+
+selection = alt.selection_multi(fields=['level_1'], bind='legend')
+
+upper = alt.Chart(line_df).mark_line(point=True).encode(
+    x='year:O',
+    y='coverage:Q',
+    color='level_1:N',
+    opacity=alt.condition(selection, alt.value(1), alt.value(0.2))
+).transform_filter(
+    brush
+).properties(
+    width=550
+).add_selection(
+    selection
+)
+
+country_bar = alt.Chart(line_df).mark_bar().encode(
+    x='year:O',
+    y='coverage:Q',
+    color='level_1:N',
+    opacity=alt.condition(selection, alt.value(1), alt.value(0.2))
+).add_selection(
+    brush
+).properties(
+    width=550
+).add_selection(
+    selection
+)
+
+chart1 = upper & country_bar
+chart1
+
+st.altair_chart(chart1, use_container_width=True)
 
 countries_in_subset = subset["name"].unique()
 if len(countries_in_subset) != len(countries):
