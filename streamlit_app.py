@@ -43,7 +43,7 @@ subset = pd.concat([country_info, measure_info.reindex(country_info.index)], axi
 
 countries = st.selectbox(label = 'Country Select', 
     options = subset['name'].unique().tolist())
-subset = subset[subset["name"].isin(countries)]
+subset = subset[subset["name"] == countries]
 
 # create line chart dataframe based on measure
 if measure == 'wat':
