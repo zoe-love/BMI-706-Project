@@ -33,7 +33,7 @@ subset = df[df["year"] == year]
 
 type = st.radio(
     label = 'Measure Type',
-    options = ['wat', 'hyg', 'san'])
+    options = subset['measure'].unique().tolist())
 subset = subset[subset["measure"] == type]
 
 # Country selection
