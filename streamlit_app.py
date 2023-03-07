@@ -118,7 +118,7 @@ levels_wide = [(type + " ") + i for i in levels]
 
 ### Chart 2 ###
 global_base = alt.Chart(subset_wide).properties(
-    width=550
+    width=500
 )
 
 global_chart = global_base.transform_fold(
