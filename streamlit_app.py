@@ -87,7 +87,7 @@ global_chart = global_base.transform_fold(
 
 rule = global_base.mark_rule(color='red').encode(
     x=alt.X('name:O',title='Countries', sort=alt.EncodingSortField('wat bas', op='max'), axis=alt.Axis(labels=False)),
-    size=alt.value(1)
+    size=alt.value(3)
 ).transform_filter(
     alt.datum.name == country
 )
