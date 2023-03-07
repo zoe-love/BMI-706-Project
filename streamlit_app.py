@@ -164,20 +164,20 @@ upper = alt.Chart(line_df).mark_line(point=True).encode(
 ).transform_filter(
     brush
 ).properties(
-    width=550
+    width=275
 ).add_selection(
     selection
 )
 
 country_bar = alt.Chart(line_df).mark_bar().encode(
     x='year:O',
-    y='coverage:Q',
+    y=alt.Y('coverage:Q', title = ''),
     color='level_1:N',
     opacity=alt.condition(selection, alt.value(1), alt.value(0.2))
 ).add_selection(
     brush
 ).properties(
-    width=550
+    width=275
 ).add_selection(
     selection
 )
