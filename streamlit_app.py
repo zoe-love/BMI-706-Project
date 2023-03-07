@@ -17,7 +17,7 @@ def load_data():
 df = load_data()
 
 ### TITLE ###
-st.write("## Global Water, Hygeine, and Sanitation Data")
+st.write("## Global Water, Hygiene, and Sanitation Data")
 
 # Year selection Slider
 
