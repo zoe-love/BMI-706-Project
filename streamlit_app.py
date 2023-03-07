@@ -80,13 +80,13 @@ global_chart = global_base.transform_fold(
   levels_wide,
   as_=['column', 'value']
 ).mark_bar().encode(
-  x=alt.X('name:O',title='Countries', sort=alt.EncodingSortField('wat bas', op='max'), axis=alt.Axis(labels=False)),
+  x=alt.X('name:O',title='Countries', sort=alt.EncodingSortField(levels_wide[0], op='max'), axis=alt.Axis(labels=False)),
   y='value:Q',
   color='column:N'
 )
 
 rule = global_base.mark_rule(color='red').encode(
-    x=alt.X('name:O',title='Countries', sort=alt.EncodingSortField('wat bas', op='max'), axis=alt.Axis(labels=False)),
+    x=alt.X('name:O',title='Countries', sort=alt.EncodingSortField(levels_wide[0], op='max'), axis=alt.Axis(labels=False)),
     size=alt.value(3)
 ).transform_filter(
     alt.datum.name == country
