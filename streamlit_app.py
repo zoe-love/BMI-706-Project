@@ -27,7 +27,7 @@ year = st.select_slider(
 subset = df[df["year"] == year]
 
 # Type of covereage selection 
-st.dataframe(df)
+#st.dataframe(df)
 
 type = st.radio(
     label = 'Measure Type',
