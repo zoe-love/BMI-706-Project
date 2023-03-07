@@ -74,11 +74,53 @@ else:
 # set wide levels
 levels_wide = [(type + " ") + i for i in levels]
 
-### Chart 1 ###
+
+## Chart 1 ##
+source = alt.topo_feature(data.world_110m.url, 'countries')
+
+width = 600
+height  = 300
+project = 'equirectangular'
+
+background = alt.Chart(source
+).mark_geoshape(
+    fill='#aaa',
+    stroke='white'
+).properties(
+    width=width,
+    height=height
+).project(project)
+
+selector = alt.selection_single(
+    empty='all', fields=['id']
+    )
+
+chart_base = alt.Chart(source
+    ).properties( 
+        width=width,
+        height=height
+    ).project(project
+    ).add_selection(selector
+    ).transform_lookup(
+        lookup="id",
+        from_=alt.LookupData(subset[subset['level_1']=='bas'], "country-code", ["coverage", 'name', 'pop_n', 'year', 'level_1'])
+    )
+
+map = chart_base.mark_geoshape().encode(
+    color='coverage:Q',
+    tooltip=['pop_n:Q', 'name:N']
+    ).transform_filter(
+    selector
+    ).properties(
+    title=f'{type} coverage globally in {year}'
+)
+chart1 = alt.vconcat(background + map)
+chart1
+
+### Chart 2 ###
 global_base = alt.Chart(subset_wide).properties(
     width=550
 )
-
 
 global_chart = global_base.transform_fold(
   levels_wide,
@@ -88,7 +130,7 @@ global_chart = global_base.transform_fold(
   y='value:Q',
   color='column:N'
 )
-
+# Add line to global overview for country selected
 rule = global_base.mark_rule(color='red').encode(
     x=alt.X('name:O',title='Countries', sort=alt.EncodingSortField(levels_wide[0], op='max'), axis=alt.Axis(labels=False)),
     size=alt.value(3)
@@ -96,7 +138,7 @@ rule = global_base.mark_rule(color='red').encode(
     alt.datum.name == country
 )
 
-
+# Add Country specific bar chart
 country_bar = alt.Chart(subset_wide[subset_wide['name']== country]).transform_fold(
   levels_wide,
   as_=['column', 'value']
@@ -111,6 +153,7 @@ country_bar = alt.Chart(subset_wide[subset_wide['name']== country]).transform_fo
 
 (global_chart + rule) & country_bar
 
+## Chart 3##
 brush = alt.selection_interval( encodings=['x'])
 
 selection = alt.selection_multi(fields=['level_1'], bind='legend')
@@ -141,7 +184,7 @@ country_bar = alt.Chart(line_df).mark_bar().encode(
     selection
 )
 
-chart1 = upper & country_bar
+chart3 = upper & country_bar
 
-st.altair_chart(chart1, use_container_width=True)
+st.altair_chart(chart3, use_container_width=True)
 
