@@ -34,19 +34,27 @@ type = st.radio(
     options = subset['measure'].unique().tolist())
 subset = subset[subset["measure"] == type]
 
+
 # Country selection
 
 countries = st.selectbox(label = 'Country Select', 
     options = subset['name'].unique().tolist())
 subset = subset[subset["name"] == countries]
 
+# create line chart dataframe based on measure
+if measure == 'wat':
+  line_df = df[(df['measure']== measure) & (df['name'] == country)]
+elif measure == 'hyg':
+  line_df = df[(df['measure']== measure) & (df['name'] == country)]
+else:
+  line_df = df[(df['measure']== measure) & (df['name'] == country)]
 
 ### Chart 1 ###
 brush = alt.selection_interval( encodings=['x'])
 
 selection = alt.selection_multi(fields=['level_1'], bind='legend')
 
-upper = alt.Chart(subset).mark_line(point=True).encode(
+upper = alt.Chart(line_df).mark_line(point=True).encode(
     x='year:O',
     y='coverage:Q',
     color='level_1:N',
@@ -59,7 +67,7 @@ upper = alt.Chart(subset).mark_line(point=True).encode(
     selection
 )
 
-country_bar = alt.Chart(subset).mark_bar().encode(
+country_bar = alt.Chart(line_df).mark_bar().encode(
     x='year:O',
     y='coverage:Q',
     color='level_1:N',
@@ -73,7 +81,6 @@ country_bar = alt.Chart(subset).mark_bar().encode(
 )
 
 chart1 = upper & country_bar
-chart1
 
 st.altair_chart(chart1, use_container_width=True)
 
