@@ -34,6 +34,10 @@ type = st.radio(
     options = subset['measure'].unique().tolist())
 subset = subset[subset["measure"] == type]
 
+# Global overview = subset_wide
+subset_wide = pd.pivot_table(subset, values = 'coverage', index = ['name', 'year', 'pop_n', "iso3", 'country-code'], columns = ['measure', 'level_1']).reset_index()
+subset_wide.columns = [' '.join(col).strip() for col in subset_wide.columns.values]
+#subet.rename(columns={"A": "a", "B": "c"})
 
 # Country selection
 
@@ -61,10 +65,7 @@ elif type == 'hyg':
 else:
   levels = san_levels
 
-# Global overview = subset_wide
-subset_wide = pd.pivot_table(subset, values = 'coverage', index = ['name', 'year', 'pop_n', "iso3", 'country-code'], columns = ['measure', 'level_1']).reset_index()
-subset_wide.columns = [' '.join(col).strip() for col in subset_wide.columns.values]
-#subet.rename(columns={"A": "a", "B": "c"})
+
 
 # set wide levels
 levels_wide = [(type + " ") + i for i in levels]
