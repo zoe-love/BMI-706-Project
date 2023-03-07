@@ -23,7 +23,8 @@ st.write("## Global Water, Hygiene, and Sanitation Data")
 
 year = st.select_slider(
     label = "Year Select",
-    options = df['year'].unique().tolist())
+    options = df['year'].unique().tolist(),
+    value = 2012)
 subset = df[df["year"] == year]
 
 # Type of covereage selection 
