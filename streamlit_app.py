@@ -183,7 +183,7 @@ country_bar = alt.Chart(line_df).mark_bar().encode(
     selection
 )
 
-chart3 = upper & country_bar
+chart3 = upper | country_bar
 
 st.altair_chart(chart3, use_container_width=True)
 
