@@ -7,7 +7,7 @@ import country_converter as coco
 cc = coco.CountryConverter()
 
 
-@st.cache
+@st.cache_data
 def load_data():
 
     df = pd.read_csv("https://raw.githubusercontent.com/zoe-love/BMI-706-Project/main/wash_data_cleaned.csv")
