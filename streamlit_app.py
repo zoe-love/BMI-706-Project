@@ -49,7 +49,62 @@ elif type == 'hyg':
 else:
   line_df = df[(df['measure']== type) & (df['name'] == country)]
 
+# set levels for bar chart based on measure
+wat_levels = ['bas', 'lim', 'unimp', 'sur']
+hyg_levels = ['bas', 'lim', 'nfac']
+san_levels = ['bas', 'lim', 'sew_c', 'sep', 'lat', 'unimp', 'od']
+
+if type == 'wat':
+  levels = wat_levels
+elif type == 'hyg':
+  levels = hyg_levels
+else:
+  levels = san_levels
+
+# Global overview = subset_wide
+subset_wide = pd.pivot_table(subset, values = 'coverage', index = ['name', 'year', 'pop_n', "iso3", 'country-code'], columns = ['measure', 'level_1']).reset_index()
+subset_wide.columns = [' '.join(col).strip() for col in subset_wide.columns.values]
+#subet.rename(columns={"A": "a", "B": "c"})
+
+# set wide levels
+levels_wide = [(type + " ") + i for i in levels]
+
 ### Chart 1 ###
+global_base = alt.Chart(subset_wide).properties(
+    width=550
+)
+
+
+global_chart = global_base.transform_fold(
+  levels_wide,
+  as_=['column', 'value']
+).mark_bar().encode(
+  x=alt.X('name:O',title='Countries', sort=alt.EncodingSortField('wat bas', op='max'), axis=alt.Axis(labels=False)),
+  y='value:Q',
+  color='column:N'
+)
+
+rule = global_base.mark_rule(color='red').encode(
+    x=alt.X('name:O',title='Countries', sort=alt.EncodingSortField('wat bas', op='max'), axis=alt.Axis(labels=False)),
+    size=alt.value(1)
+).transform_filter(
+    alt.datum.name == country
+)
+
+
+country_bar = alt.Chart(subset_wide[subset_wide['name']== country]).transform_fold(
+  levels_wide,
+  as_=['column', 'value']
+).mark_bar().encode(
+    x=alt.X('name:O', title=f'{country}', axis=alt.Axis(labels=False)),
+    y='value:Q',
+    color='column:N'
+).properties(
+    width=550
+)
+
+(global_chart + rule) & country_bar
+
 brush = alt.selection_interval( encodings=['x'])
 
 selection = alt.selection_multi(fields=['level_1'], bind='legend')
