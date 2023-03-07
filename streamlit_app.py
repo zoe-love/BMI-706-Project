@@ -42,39 +42,6 @@ if type == 'san':
 else:
   subset_wide = subset_wide
 
-
-# Country selection
-
-country = st.selectbox(label = 'Country Select', 
-    options = subset['name'].unique().tolist())
-subset = subset[subset["name"] == country]
-
-# create line chart dataframe based on measure
-if type == 'wat':
-  line_df = df[(df['measure']== type) & (df['name'] == country)]
-elif type == 'hyg':
-  line_df = df[(df['measure']== type) & (df['name'] == country)]
-else:
-  line_df = df[(df['measure']== type) & (df['name'] == country)]
-
-# set levels for bar chart based on measure
-wat_levels = ['bas', 'lim', 'unimp', 'sur']
-hyg_levels = ['bas', 'lim', 'nfac']
-san_levels = ['bas', 'lim', 'unimp', 'od']
-
-if type == 'wat':
-  levels = wat_levels
-elif type == 'hyg':
-  levels = hyg_levels
-else:
-  levels = san_levels
-
-
-
-# set wide levels
-levels_wide = [(type + " ") + i for i in levels]
-
-
 ## Chart 1 ##
 source = alt.topo_feature(data.world_110m.url, 'countries')
 
@@ -116,6 +83,37 @@ map = chart_base.mark_geoshape().encode(
 )
 chart1 = alt.vconcat(background + map)
 chart1
+
+# Country selection
+
+country = st.selectbox(label = 'Country Select', 
+    options = subset['name'].unique().tolist())
+subset = subset[subset["name"] == country]
+
+# create line chart dataframe based on measure
+if type == 'wat':
+  line_df = df[(df['measure']== type) & (df['name'] == country)]
+elif type == 'hyg':
+  line_df = df[(df['measure']== type) & (df['name'] == country)]
+else:
+  line_df = df[(df['measure']== type) & (df['name'] == country)]
+
+# set levels for bar chart based on measure
+wat_levels = ['bas', 'lim', 'unimp', 'sur']
+hyg_levels = ['bas', 'lim', 'nfac']
+san_levels = ['bas', 'lim', 'unimp', 'od']
+
+if type == 'wat':
+  levels = wat_levels
+elif type == 'hyg':
+  levels = hyg_levels
+else:
+  levels = san_levels
+
+
+
+# set wide levels
+levels_wide = [(type + " ") + i for i in levels]
 
 ### Chart 2 ###
 global_base = alt.Chart(subset_wide).properties(
