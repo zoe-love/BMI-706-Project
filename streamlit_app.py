@@ -101,7 +101,8 @@ country_bar = alt.Chart(subset_wide[subset_wide['name']== country]).transform_fo
     y='value:Q',
     color='column:N'
 ).properties(
-    width=550
+    width=550,
+    height = 100
 )
 
 (global_chart + rule) & country_bar
