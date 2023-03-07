@@ -33,8 +33,7 @@ subset = df[df["year"] == year]
 
 type = st.radio(
     label = 'Measure Type',
-    options = ['wat', 'hyg', 'san']
-)
+    options = ['wat', 'hyg', 'san'])
 subset = subset[subset["measure"] == type]
 
 # Country selection
@@ -42,25 +41,6 @@ subset = subset[subset["measure"] == type]
 countries = st.selectbox(label = 'Country Select', 
     options = subset['name'].unique().tolist())
 subset = subset[subset["name"] == countries]
-
-# set levels for bar chart based on measure
-wat_levels = ['bas', 'lim', 'unimp', 'sur']
-hyg_levels = ['bas', 'lim', 'nfac']
-san_levels = ['bas', 'lim', 'sew_c', 'sep', 'lat', 'unimp', 'od']
-
-if type == 'wat':
-  levels = wat_levels
-elif type == 'hyg':
-  levels = hyg_levels
-else:
-  levels = san_levels
-
-# Global overview = subset_wide
-subset_wide = pd.pivot_table(subset, values = 'coverage', index = ['name', 'year', 'pop_n', "iso3", 'country-code'], columns = ['measure', 'level_1']).reset_index()
-subset_wide.columns = [' '.join(col).strip() for col in subset_wide.columns.values]
-
-# set wide levels
-levels_wide = [(type + " ") + i for i in levels]
 
 
 ### Chart 1 ###
@@ -99,10 +79,3 @@ chart1
 
 st.altair_chart(chart1, use_container_width=True)
 
-countries_in_subset = subset["name"].unique()
-if len(countries_in_subset) != len(countries):
-    if len(countries_in_subset) == 0:
-        st.write("No data avaiable for given subset.")
-    else:
-        missing = set(countries) - set(countries_in_subset)
-        st.write("No data available for " + ", ".join(missing) + ".")
