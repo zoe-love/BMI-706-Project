@@ -117,6 +117,8 @@ else:
 levels_wide = [(type + " ") + i for i in levels]
 
 ### Chart 2 ###
+selection = alt.selection_multi(fields=['column'], bind='legend')
+
 global_base = alt.Chart(subset_wide).properties(
     width=500
 )
@@ -127,7 +129,10 @@ global_chart = global_base.transform_fold(
 ).mark_bar().encode(
   x=alt.X('name:O',title='Countries', sort=alt.EncodingSortField(levels_wide[0], op='max'), axis=alt.Axis(labels=False)),
   y='value:Q',
-  color='column:N'
+  color='column:N',
+  opacity=alt.condition(selection, alt.value(1), alt.value(0.2))
+).add_selection(
+    selection
 )
 # Add line to global overview for country selected
 rule = global_base.mark_rule(color='red').encode(
@@ -144,9 +149,12 @@ country_bar = alt.Chart(subset_wide[subset_wide['name']== country]).transform_fo
 ).mark_bar().encode(
     x=alt.X('name:O', title=f'{country}', axis=alt.Axis(labels=False)),
     y=alt.Y('value:Q', title = ''),
-    color='column:N'
+    color='column:N',
+    opacity=alt.condition(selection, alt.value(1), alt.value(0.2))
 ).properties(
     width=50
+).add_selection(
+    selection
 )
 
 (global_chart + rule) | country_bar
