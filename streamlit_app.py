@@ -37,7 +37,11 @@ subset = subset[subset["measure"] == type]
 # Global overview = subset_wide
 subset_wide = pd.pivot_table(subset, values = 'coverage', index = ['name', 'year', 'pop_n', "iso3", 'country-code'], columns = ['measure', 'level_1']).reset_index()
 subset_wide.columns = [' '.join(col).strip() for col in subset_wide.columns.values]
-#subet.rename(columns={"A": "a", "B": "c"})
+if type == 'san':
+  subset_wide = subset_wide.drop(columns = ['san lat', 'san sep', 'san sew_c'])
+else:
+  subset_wide = subset_wide
+
 
 # Country selection
 
@@ -56,7 +60,7 @@ else:
 # set levels for bar chart based on measure
 wat_levels = ['bas', 'lim', 'unimp', 'sur']
 hyg_levels = ['bas', 'lim', 'nfac']
-san_levels = ['bas', 'lim', 'sew_c', 'sep', 'lat', 'unimp', 'od']
+san_levels = ['bas', 'lim', 'unimp', 'od']
 
 if type == 'wat':
   levels = wat_levels
