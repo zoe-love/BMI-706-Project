@@ -143,7 +143,7 @@ country_bar = alt.Chart(subset_wide[subset_wide['name']== country]).transform_fo
   as_=['column', 'value']
 ).mark_bar().encode(
     x=alt.X('name:O', title=f'{country}', axis=alt.Axis(labels=False)),
-    y='value:Q',
+    y=alt.Y('value:Q', title = ''),
     color='column:N'
 ).properties(
     width=50
