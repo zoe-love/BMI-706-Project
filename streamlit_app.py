@@ -37,17 +37,17 @@ subset = subset[subset["measure"] == type]
 
 # Country selection
 
-countries = st.selectbox(label = 'Country Select', 
+country = st.selectbox(label = 'Country Select', 
     options = subset['name'].unique().tolist())
-subset = subset[subset["name"] == countries]
+subset = subset[subset["name"] == country]
 
 # create line chart dataframe based on measure
-if measure == 'wat':
-  line_df = df[(df['measure']== measure) & (df['name'] == country)]
-elif measure == 'hyg':
-  line_df = df[(df['measure']== measure) & (df['name'] == country)]
+if type == 'wat':
+  line_df = df[(df['measure']== type) & (df['name'] == country)]
+elif type == 'hyg':
+  line_df = df[(df['measure']== type) & (df['name'] == country)]
 else:
-  line_df = df[(df['measure']== measure) & (df['name'] == country)]
+  line_df = df[(df['measure']== type) & (df['name'] == country)]
 
 ### Chart 1 ###
 brush = alt.selection_interval( encodings=['x'])
