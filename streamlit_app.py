@@ -21,7 +21,7 @@ st.write("## Global Water, Hygeine, and Sanitation Data")
 
 # Year selection Slider
 
-year = st.slider(
+year = st.select_slider(
     label = "Year Select",
     min_value = int(df['year'].min()),
     max_value = int(df['year'].max()),
