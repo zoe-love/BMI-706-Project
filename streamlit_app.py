@@ -335,7 +335,7 @@ else:
     height=50
   )
 
-  imp_1 = alt.Chart(df_improved_1).mark_arc().encode(
+  imp_1 = alt.Chart(df_improved_1).mark_arc(innerRadius=75).encode(
       theta = alt.Theta('sum(coverage)', title=''),
       color = alt.Color('Service',
                       sort=imp_1_sort,
@@ -376,7 +376,7 @@ else:
       width = 275
   )
 
-  unimp = alt.Chart(df_unimproved).mark_arc().encode(
+  unimp = alt.Chart(df_unimproved).mark_arc(innerRadius=75).encode(
       theta = alt.Theta('sum(coverage)', title=''),
       color = alt.Color('Service',
                       sort=unimp_sort,
