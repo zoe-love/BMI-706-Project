@@ -242,7 +242,7 @@ if type == 'wat':
   imp_1_color = ['#85EF73', '#C5F0AA', '#FBE48F']
 
   sm_sort = ["Available when needed", "Accessible on premises", "Free from contamination"]
-  sm_color = '#85EF73'
+  sm_color = ['#85EF73','#C5F0AA','#D5F3D3'] 
 
   imp_2_sort = ["Piped", "Non-piped"]
   imp_2_color = ['#85EF73','#C5F0AA'] 
@@ -257,7 +257,7 @@ elif type == 'san':
   imp_1_color = ['#85EF73', '#C5F0AA', '#FBE48F']
 
   sm_sort = ["Treated and disposed in situ", "Stored, then emptied and treated off-site", "Transported through a sewer"]
-  sm_color = '#85EF73'
+  sm_color = ['#D5F3D3','#C5F0AA','#85EF73']
 
   imp_2_sort = ["Sewer", "Septic tanks", "Latrines"]
   imp_2_color = ['#85EF73','#C5F0AA','#D5F3D3'] 
@@ -346,15 +346,20 @@ else:
       width = 275
   )  
   
-  sm = alt.Chart(df_sm).mark_bar(color=sm_color).encode(
+  sm = alt.Chart(df_sm).mark_bar().encode(
       x=alt.X('sum(coverage)', title="", scale=alt.Scale(domain=[0, 100])),
-      y=alt.Y('Service',title="",
-              sort=sm_sort),
+      y=alt.Y('Service',title="Criteria",
+              sort=sm_sort,
+              axis=alt.Axis(labels=False)),
+              color=alt.Color('Service',
+                      sort=sm_sort,
+                      scale=alt.Scale(domain=sm_sort,
+                                      range=sm_color)),
       tooltip=['Service', 'coverage']
   ).properties(
       title="Safely managed criteria",
       width=275,
-      height=50
+      height=100
   )
 
   imp_2 = alt.Chart(df_improved_2).mark_arc(innerRadius=75).encode(
@@ -382,10 +387,11 @@ else:
       width = 275
   )
 
-  imp = alt.vconcat(imp_1, sm, imp_2).resolve_scale(color='independent',
+  step1 = alt.vconcat(sm, imp_2).resolve_scale(color='independent')
+  step2 = alt.hconcat(imp_1, unimp).resolve_scale(color='independent',
+                                                  theta='independent')
+  step3 = alt.vconcat(step2, step1).resolve_scale(color='independent',
                                                     theta='independent')
-  breakdown = alt.hconcat(imp, unimp).resolve_scale(color='independent', 
-                                                    theta='independent')
-  chart4 = alt.vconcat(bar, breakdown).resolve_scale(color='independent')
+  chart4 = alt.vconcat(bar, step3).resolve_scale(color='independent')
 
 st.altair_chart(chart4, use_container_width=True)
