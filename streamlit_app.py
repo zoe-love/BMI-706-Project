@@ -278,7 +278,7 @@ else:
 if type == 'hyg':
   bar = alt.Chart(df_bar).mark_bar().encode(
       x=alt.X('coverage', title="", scale=alt.Scale(domain=[0, 100])),
-      y=alt.Y('name',title=""),
+      y=alt.Y('name',title="",axis=alt.Axis(labels=False)),
       color=alt.Color('Service',
                       sort=bar_sort,
                       scale=alt.Scale(domain=bar_sort,
@@ -286,6 +286,7 @@ if type == 'hyg':
       order=alt.Order('color_sort:Q'),
       tooltip=['Service', 'coverage']
   ).properties(
+    title=country,
       width=570,
       height=50
   )
@@ -321,7 +322,7 @@ if type == 'hyg':
 else:
   bar = alt.Chart(df_bar).mark_bar().encode(
       x=alt.X('sum(coverage)', title="", scale=alt.Scale(domain=[0, 100])),
-      y=alt.Y('name',title=""),
+      y=alt.Y('name',title="",axis=alt.Axis(labels=False)),
       color=alt.Color('Service',
                       sort=bar_sort,
                       scale=alt.Scale(domain=bar_sort,
@@ -329,8 +330,9 @@ else:
       order=alt.Order('color_sort:Q'),
       tooltip=['Service', 'coverage']
   ).properties(
-      width=680,
-      height=50
+    title=country,
+    width=680,
+    height=50
   )
 
   imp_1 = alt.Chart(df_improved_1).mark_arc().encode(
