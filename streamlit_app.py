@@ -4,6 +4,7 @@ import streamlit as st
 import vega_datasets
 from vega_datasets import data
 import country_converter as coco
+from PIL import Image
 cc = coco.CountryConverter()
 
 
@@ -18,6 +19,9 @@ df = load_data()
 
 ### TITLE ###
 st.write("## Global Water, Hygiene, and Sanitation Data")
+
+image = Image.open('infographic.jpg')
+st.image(image, caption='Breakdown of WASH Data')
 
 # Year selection Slider
 
@@ -193,6 +197,3 @@ country_bar = alt.Chart(line_df).mark_bar().encode(
 chart3 = upper | country_bar
 
 st.altair_chart(chart3, use_container_width=True)
-
-#test
-st.write("Test")
