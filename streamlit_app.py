@@ -194,3 +194,5 @@ chart3 = upper | country_bar
 
 st.altair_chart(chart3, use_container_width=True)
 
+#test
+st.write("Test")
