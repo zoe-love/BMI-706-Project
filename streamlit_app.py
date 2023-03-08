@@ -197,3 +197,195 @@ country_bar = alt.Chart(line_df).mark_bar().encode(
 chart3 = upper | country_bar
 
 st.altair_chart(chart3, use_container_width=True)
+
+
+st.write("## Breakdown of Service Levels")
+@st.cache_data
+def load_breakdown_data():
+
+    df = pd.read_csv("https://raw.githubusercontent.com/zoe-love/BMI-706-Project/main/wash_data_breakdown.csv")
+
+    return df
+
+wash_df = load_breakdown_data() 
+
+df_subset = wash_df[(wash_df["year"] == year) &
+                    (wash_df["name"] == country) &
+                    (wash_df["measure"] == type)]
+
+# Create dataframes for charts
+if type == 'hyg':
+  df_bar = df_subset[df_subset['level_0'].isin(['improved_1', 'unimproved'])]
+
+  df_improved_1 = df_subset[df_subset['level_0'] == 'improved_1']
+
+  df_unimproved = df_subset[df_subset['level_0'] == 'unimproved']
+else:
+  df_bar = df_subset[(df_subset['level_0'].isin(['improved_1', 'unimproved'])) & 
+                  (df_subset['level_1'] != 'bas')]
+
+  df_improved_1 = df_subset[(df_subset['level_0'] == 'improved_1') & 
+                        (df_subset['level_1'] != 'bas')]
+
+  df_sm = df_subset[df_subset['level_0'] == 'sm_criteria']
+
+  df_improved_2 = df_subset[df_subset['level_0'] == 'improved_2']
+
+  df_unimproved = df_subset[df_subset['level_0'] == 'unimproved']
+
+# Specify order and colors
+if type == 'wat':
+  bar_sort = ["Safely managed", "Basic", "Limited", "Unimproved", "Surface water"]
+  bar_color = ['#85EF73', '#C5F0AA', '#FBE48F', '#FFCC99', '#FF8585']
+
+  imp_1_sort = ["Safely managed", "Basic", "Limited"]
+  imp_1_color = ['#85EF73', '#C5F0AA', '#FBE48F']
+
+  sm_sort = ["Available when needed", "Accessible on premises", "Free from contamination"]
+  sm_color = '#85EF73'
+
+  imp_2_sort = ["Piped", "Non-piped"]
+  imp_2_color = ['#85EF73','#C5F0AA'] 
+
+  unimp_sort = ["Unimproved", "Surface water"]
+  unimp_color = ['#FFCC99', '#FF8585']
+elif type == 'san':
+  bar_sort = ["Safely managed", "Basic", "Limited", "Unimproved", "Open defecation"]
+  bar_color = ['#85EF73', '#C5F0AA', '#FBE48F', '#FFCC99', '#FF8585']
+
+  imp_1_sort = ["Safely managed", "Basic", "Limited"]
+  imp_1_color = ['#85EF73', '#C5F0AA', '#FBE48F']
+
+  sm_sort = ["Treated and disposed in situ", "Stored, then emptied and treated off-site", "Transported through a sewer"]
+  sm_color = '#85EF73'
+
+  imp_2_sort = ["Sewer", "Septic tanks", "Latrines"]
+  imp_2_color = ['#85EF73','#C5F0AA','#D5F3D3'] 
+
+  unimp_sort = ["Unimproved", "Open defecation"]
+  unimp_color = ['#FFCC99', '#FF8585']
+else:
+  bar_sort = ["Basic", "Limited", "No facility"]
+  bar_color = ['#C5F0AA', '#FBE48F', '#FFCC99']
+
+  imp_1_sort = ["Basic", "Limited"]
+  imp_1_color = ['#C5F0AA', '#FBE48F']
+
+  unimp_sort = ["No facility"]
+  unimp_color = ['#FFCC99']
+
+# Construct charts
+if type == 'hyg':
+  bar = alt.Chart(df_bar).mark_bar().encode(
+      x=alt.X('coverage', title="", scale=alt.Scale(domain=[0, 100])),
+      y=alt.Y('name',title=""),
+      color=alt.Color('Service',
+                      sort=bar_sort,
+                      scale=alt.Scale(domain=bar_sort,
+                                      range=bar_color)),
+      order=alt.Order('color_sort:Q'),
+      tooltip=['Service', 'coverage']
+  ).properties(
+      width=570,
+      height=50
+  )
+
+  imp_1 = alt.Chart(df_improved_1).mark_arc(innerRadius=75).encode(
+      theta = alt.Theta('coverage', title=''),
+      color = alt.Color('Service',
+                      sort=imp_1_sort,
+                      scale=alt.Scale(domain=imp_1_sort,
+                                      range=imp_1_color)),
+      order = alt.Order('color_sort:Q'),
+      tooltip=['Service', 'coverage']
+  ).properties(
+      title="Improved services",
+      width = 275
+  )
+
+  unimp = alt.Chart(df_unimproved).mark_arc(innerRadius=75).encode(
+      theta = alt.Theta('coverage', title=''),
+      color = alt.Color('Service',
+                      # sort=unimp_sort,
+                      scale=alt.Scale(domain=unimp_sort,
+                                      range=unimp_color)),
+      order = alt.Order('color_sort:Q'),
+      tooltip=['Service', 'coverage']
+  ).properties(
+      title="Unimproved services",
+      width = 275
+  )
+
+  breakdown = alt.hconcat(imp_1, unimp).resolve_scale(theta='independent')
+  chart4 = alt.vconcat(bar, breakdown)
+else:
+  bar = alt.Chart(df_bar).mark_bar().encode(
+      x=alt.X('sum(coverage)', title="", scale=alt.Scale(domain=[0, 100])),
+      y=alt.Y('name',title=""),
+      color=alt.Color('Service',
+                      sort=bar_sort,
+                      scale=alt.Scale(domain=bar_sort,
+                                      range=bar_color)),
+      order=alt.Order('color_sort:Q'),
+      tooltip=['Service', 'coverage']
+  ).properties(
+      width=680,
+      height=50
+  )
+
+  imp_1 = alt.Chart(df_improved_1).mark_arc().encode(
+      theta = alt.Theta('sum(coverage)', title=''),
+      color = alt.Color('Service',
+                      sort=imp_1_sort,
+                      scale=alt.Scale(domain=imp_1_sort,
+                                      range=imp_1_color)),
+      order = alt.Order('color_sort:Q'),
+      tooltip=['Service', 'coverage']
+  ).properties(
+      title="Improved services",
+      width = 275
+  )  
+  
+  sm = alt.Chart(df_sm).mark_bar(color=sm_color).encode(
+      x=alt.X('sum(coverage)', title="", scale=alt.Scale(domain=[0, 100])),
+      y=alt.Y('Service',title="",
+              sort=sm_sort),
+      tooltip=['Service', 'coverage']
+  ).properties(
+      title="Safely managed criteria",
+      width=275,
+      height=50
+  )
+
+  imp_2 = alt.Chart(df_improved_2).mark_arc(innerRadius=75).encode(
+      theta = alt.Theta('sum(coverage)', title=''),
+      color = alt.Color('Service',
+                      sort=imp_2_sort,
+                      scale=alt.Scale(domain=imp_2_sort,
+                                      range=imp_2_color)),
+      tooltip=['Service', 'coverage']
+  ).properties(
+      title="Alternative breakdown",
+      width = 275
+  )
+
+  unimp = alt.Chart(df_unimproved).mark_arc().encode(
+      theta = alt.Theta('sum(coverage)', title=''),
+      color = alt.Color('Service',
+                      sort=unimp_sort,
+                      scale=alt.Scale(domain=unimp_sort,
+                                      range=unimp_color)),
+      order = alt.Order('color_sort:Q'),
+      tooltip=['Service', 'coverage']
+  ).properties(
+      title="Unimproved services",
+      width = 275
+  )
+
+  imp = alt.vconcat(imp_1, sm, imp_2).resolve_scale(color='independent',
+                                                    theta='independent')
+  breakdown = alt.hconcat(imp, unimp).resolve_scale(color='independent', 
+                                                    theta='independent')
+  chart4 = alt.vconcat(bar, breakdown).resolve_scale(color='independent')
+
+st.altair_chart(chart4, use_container_width=True)
