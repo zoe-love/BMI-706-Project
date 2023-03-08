@@ -347,14 +347,14 @@ else:
   )  
   
   sm = alt.Chart(df_sm).mark_bar().encode(
-      x=alt.X('sum(coverage)', title="", scale=alt.Scale(domain=[0, 100])),
-      y=alt.Y('Service',title="Criteria",
-              sort=sm_sort,
-              axis=alt.Axis(labels=False)),
-              color=alt.Color('Service',
-                      sort=sm_sort,
-                      scale=alt.Scale(domain=sm_sort,
-                                      range=sm_color)),
+    x=alt.X('sum(coverage)', title="", scale=alt.Scale(domain=[0, 100])),
+    y=alt.Y('Service',title="",
+            sort=sm_sort,
+            axis=alt.Axis(labels=False)),
+    color=alt.Color('Service',title="Criteria",
+                    sort=sm_sort,
+                    scale=alt.Scale(domain=sm_sort,
+                                    range=sm_color)),
       tooltip=['Service', 'coverage']
   ).properties(
       title="Safely managed criteria",
